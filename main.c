@@ -1,27 +1,44 @@
 #include <stdio.h>
 # include "filler_func.h"
+#include <fcntl.h>
+
+t_place		ft_init_coord()
+{
+	t_place		coord;
+
+	coord.x = 6666;
+	coord.y = 6666;
+	coord.min = 10000;
+	return (coord);
+}
+
+void		find_your_player(t_filler *fill)
+{
+	char		*line;
+
+	get_next_line(0, &line);
+	free(line);
+	line = ft_strchr(line, 'p');
+	fill->player = (*(++line) == '1') ? 'O' : 'X';
+	fill->enemy = (fill->player == 'X') ? 'O' : 'X';
+	fill->fd = open("file_test", O_WRONLY);///todo del
+}
 
 int main()
 {
-	t_filler fill;
-	char **map = NULL;
-	t_piece *token;
+	t_filler	fill;
+	char		**map = NULL;
+	t_piece		*token ;
+	int 		flag = 1;
+	t_place		coord;
 
 	find_your_player(&fill);
-	fill = ft_read(fill);
-	printf("\n%c\n%c\nx: %d\ty: %d\n", fill.player,fill.enemy, fill.map_x,
-			fill.map_y);
-	fill.map = create_map(&fill, map);
-	for (int i = 0; i < fill.map_x; i++)
+	while (flag)
 	{
-		for (int j = 0; j < fill.map_y; j++)
-			printf("%c", fill.map[i][j]);
-		printf("\n");
+		coord = ft_init_coord();
+		fill = ft_read(fill, map);
+		token = read_token(&fill);
+		flag = ft_put_token(&fill, token, coord);
 	}
-	token = read_token();
-	for (int i =0; i < (int) token->token->len; i++)
-		printf("%d\t%d\n", token->token->x[i],token->token->y[i]);
-
-	ft_put_token(&fill, token);
 	return (0);
 }

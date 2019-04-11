@@ -20,14 +20,14 @@ t_vec	*ft_makevec()
 		return (0);
 	r->cap = 10;
 	r->len = 0;
-	if (!(r->x = ft_memalloc(sizeof(int) * 10)))
+	if (!(r->x = (int *)malloc(sizeof(int) * 10)))
 		return (0);
-	if (!(r->y = ft_memalloc(sizeof(int) * 10)))
+	if (!(r->y = (int *)malloc(sizeof(int) * 10)))
 		return (0);
 	return (r);
 }
 
-void	ft_vec_pop_front(t_vec	*vec)
+void	ft_vec_pop_front(t_vec *vec)
 {
 	int	*new_x;
 	int	*new_y;
@@ -37,9 +37,10 @@ void	ft_vec_pop_front(t_vec	*vec)
 	if (!vec)
 		return ;
 	vec->len--;
-	printf("len: %zu\n", vec->len);
-	new_x = ft_memalloc(vec->len);
-	new_y = ft_memalloc(vec->len);
+	if (vec->cap > 10)
+		vec->cap--;
+	new_x = ft_memalloc(vec->len * sizeof(int));
+	new_y = ft_memalloc(vec->len * sizeof(int));
 	while (i < (int)vec->len)
 	{
 		new_x[i] = vec->x[i + 1];
@@ -52,22 +53,26 @@ void	ft_vec_pop_front(t_vec	*vec)
 	vec->y = new_y;
 }
 
-void	ft_vec_push_back(t_vec	*vec, int x, int y)
+void	ft_vec_push_back(t_vec *vec, int x, int y)
 {
-	int *new_x;
-	int *new_y;
-	
-	
+	int		*new_x;
+	int		*new_y;
+	size_t	i;
+
+	i = -1;
 	if (!vec)
 		return ;
-	if (vec->len + 1 >= vec->cap)
+	if (vec->len + 1 > vec->cap)
 	{
-		while (vec->len + 1 >= vec->cap)
+		while (vec->len >= vec->cap)
 			vec->cap *= 2;
-		new_x = ft_memalloc(vec->cap);
-		new_y = ft_memalloc(vec->cap);
-		ft_memcpy(new_x, vec->x, vec->len);
-		ft_memcpy(new_y, vec->y, vec->len);
+		new_x = malloc(vec->cap * sizeof(int));
+		new_y = malloc(vec->cap * sizeof(int));
+		while (++i < vec->len)
+			new_x[i] = vec->x[i];
+		i = -1;
+		while (++i < vec->len)
+			new_y[i] = vec->y[i];
 		new_x[vec->len] = x;
 		new_y[vec->len++] = y;
 		free(vec->x);
@@ -81,7 +86,6 @@ void	ft_vec_push_back(t_vec	*vec, int x, int y)
 		vec->y[vec->len++] = y;
 	}
 }
-
 void	ft_free_vec(t_vec **vec)
 {
 	if (*vec && (*vec)->x && (*vec)->y)

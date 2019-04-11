@@ -12,21 +12,15 @@
 
 # include "filler_func.h"
 
-void		find_your_player(t_filler *fill)
+t_filler	ft_read(t_filler fill, char **map)
 {
 	char		*line;
+	char 		*buff;
 
-	get_next_line(0, &line);
-	line = ft_strchr(line, 'p');
-	fill->player = (*(++line) == '1') ? 'O' : 'X';
-	fill->enemy = (fill->player == 'X') ? 'O' : 'X';
-}
-
-t_filler	ft_read(t_filler fill)
-{
-	char		*line;
-
-	get_next_line(0, &line);
+	get_next_line(0, &buff);
+	line = buff;
+	free(buff);
+	//ft_putendl_fd(line,fill.fd); ///todo  del
 	while (*line != 0)
 	{
 		if (ft_isdigit(*line))
@@ -39,98 +33,44 @@ t_filler	ft_read(t_filler fill)
 		++line;
 	}
 	get_next_line(0, &line);
+	//ft_putendl_fd(line,fill.fd); ///todo  del
 	free(line);
+	fill.map = create_map(&fill, map);
 	return (fill);
 }
 
-char 	**create_map(t_filler *fill, char **map)
-{
-	char	*line;
-	int		i;
-
-	if (map == NULL)
-	{
-		if (!(map = (char **)ft_memalloc(fill->map_x + 1)))
-			return (NULL); //todo
-		i = 0;
-		while (i < fill->map_x)
-			if (!(*(map + i++) = (char *)ft_memalloc(fill->map_y + 1)))
-				return (NULL); //todo
-		*(map + i) = NULL;
-	}
-	i = 0;
-	while (*(map + i))
-	{
-		get_next_line(0, &line);
-		line = ft_strchr(line, ' ');
-		*(map + i) = ft_strcpy(*(map + i), ++line);
-		i++;
-	}
-	return (map);
-}
-
-t_vec		*create_coord_token(char **piece, t_piece *token)
-{
-	int i;
-	int j;
-	t_vec *tok_coord;
-
-	tok_coord = ft_makevec();///*(m + i) + j)
-	i = 0;
-	while (i < token->piece_x)
-	{
-		j = 0;
-		while (j < token->piece_y)
-		{
-			if (piece[i][j] == '*')
-				ft_vec_push_back(tok_coord, i, j);
-			j++;
-		}
-		i++;
-	}
-	return (tok_coord);
-}
-
-void		del_arr(char ***arr)
-{
-	int i;
-
-	i = 0;
-	if (!*arr || !**arr)
-		return ;
-	while (*((*arr) + i))
-		free(*((*arr) + i++));
-	free(*arr);
-}
-
-t_piece		*read_token(void)
+t_piece		*read_token(t_filler *fill)
 {
 	char 	*line;
 	int 	i;
 	char	**piece;
 	t_piece	*token;
+	char	*buff;
 
 	token = (t_piece *)ft_memalloc(sizeof(t_piece));
-	get_next_line(0, &line);
+	get_next_line(0, &buff);
+	line  = buff;
+	//ft_putendl_fd(line,fill->fd); /// todo  del
 	line = ft_strchr(line, ' ');
 	token->piece_x = ft_atoi(line);
 	line = ft_strchr(++line, ' ');
 	token->piece_y = ft_atoi(line);
-	if(!(piece = (char **)ft_memalloc(token->piece_x + 1)))
+	free(buff);
+	if(!(piece = (char **)malloc(token->piece_x + 1)))
 		return (NULL);//todo
-	i = 0;
+	i = -1;
 	while (i < token->piece_x)
-		if (!(*(piece + i++) = (char *)ft_memalloc(token->piece_y + 1)))
+		if (!(*(piece + ++i) = (char *)malloc(token->piece_y + 1)))
 			return (NULL); //todo
 	*(piece + i) = NULL;
-	i = 0;
-	while (*(piece + i))
+	i = -1;
+	while (++i < token->piece_x ) ///(*(piece + i))
 	{
 		get_next_line(0, &line);
+		//ft_putendl_fd(line,fill->fd); /// todo  del
 		*(piece + i) = ft_strcpy(*(piece + i), line);
-		i++;
+		free(line);
 	}
 	token->token = create_coord_token(piece, token);
-	del_arr((&piece));
 	return (token);
 }

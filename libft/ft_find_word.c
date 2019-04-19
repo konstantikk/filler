@@ -18,6 +18,7 @@ char	*ft_find_word(const char *str, int i, char c)
 	int		n;
 	int		space;
 
+	space = 0;
 	n = 0;
 	if (str[i] == c)
 		while (str[i] == c)

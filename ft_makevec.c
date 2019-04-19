@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "filler_func.h"
+#include "filler_func.h"
 
-t_vec	*ft_makevec()
+t_vec	*ft_makevec(void)
 {
 	t_vec *r;
-	
+
 	if (!(r = (t_vec *)malloc(sizeof(t_vec))))
 		return (0);
 	r->cap = 10;
@@ -24,76 +24,68 @@ t_vec	*ft_makevec()
 		return (0);
 	if (!(r->y = (int *)malloc(sizeof(int) * 10)))
 		return (0);
+	r->start_x = r->x;
+	r->start_y = r->y;
 	return (r);
 }
 
 void	ft_vec_pop_front(t_vec *vec)
 {
+	if (!vec || !vec->len)
+		return ;
+	vec->x++;
+	vec->y++;
+	vec->cap--;
+	vec->len--;
+}
+
+void	help_push_back(t_vec *vec, int x, int y)
+{
 	int	*new_x;
 	int	*new_y;
-	int i;
-	
-	i = 0;
-	if (!vec)
-		return ;
-	vec->len--;
-	if (vec->cap > 10)
-		vec->cap--;
-	new_x = ft_memalloc(vec->len * sizeof(int));
-	new_y = ft_memalloc(vec->len * sizeof(int));
-	while (i < (int)vec->len)
-	{
-		new_x[i] = vec->x[i + 1];
-		new_y[i] = vec->y[i + 1];
-		i++;
-	}
-	free(vec->x);
-	free(vec->y);
+	int	i;
+
+	i = -1;
+	while (vec->len >= vec->cap)
+		vec->cap *= 2;
+	new_x = malloc(vec->cap * sizeof(int));
+	new_y = malloc(vec->cap * sizeof(int));
+	while (++i < vec->len)
+		new_x[i] = vec->x[i];
+	i = -1;
+	while (++i < vec->len)
+		new_y[i] = vec->y[i];
+	new_x[vec->len] = x;
+	new_y[vec->len++] = y;
+	free(vec->start_x);
+	free(vec->start_y);
 	vec->x = new_x;
 	vec->y = new_y;
+	vec->start_x = vec->x;
+	vec->start_y = vec->y;
 }
 
 void	ft_vec_push_back(t_vec *vec, int x, int y)
 {
-	int		*new_x;
-	int		*new_y;
-	size_t	i;
-
-	i = -1;
 	if (!vec)
 		return ;
 	if (vec->len + 1 > vec->cap)
-	{
-		while (vec->len >= vec->cap)
-			vec->cap *= 2;
-		new_x = malloc(vec->cap * sizeof(int));
-		new_y = malloc(vec->cap * sizeof(int));
-		while (++i < vec->len)
-			new_x[i] = vec->x[i];
-		i = -1;
-		while (++i < vec->len)
-			new_y[i] = vec->y[i];
-		new_x[vec->len] = x;
-		new_y[vec->len++] = y;
-		free(vec->x);
-		free(vec->y);
-		vec->x = new_x;
-		vec->y = new_y;
-	}
+		help_push_back(vec, x, y);
 	else
 	{
 		vec->x[vec->len] = x;
 		vec->y[vec->len++] = y;
 	}
 }
+
 void	ft_free_vec(t_vec **vec)
 {
-	if (*vec && (*vec)->x && (*vec)->y)
+	if (*vec && (*vec)->start_x && (*vec)->start_y)
 	{
-		free((*vec)->x);
-		free((*vec)->y);
-		(*vec)->x = 0;
-		(*vec)->y = 0;
+		free((*vec)->start_x);
+		free((*vec)->start_y);
+		(*vec)->start_x = 0;
+		(*vec)->start_y = 0;
 	}
 	if (*vec)
 	{

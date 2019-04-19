@@ -17,7 +17,7 @@ char	*ft_strcpy(char *dst, const char *src)
 	char *temp;
 
 	temp = dst;
-	while (*src != 0)
+	while (*src)
 		*temp++ = *src++;
 	*temp = '\0';
 	return (dst);

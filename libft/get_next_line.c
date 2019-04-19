@@ -3,106 +3,127 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbednar <sbednar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jziemann <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/03 19:21:12 by edraugr-          #+#    #+#             */
-/*   Updated: 2019/01/18 00:04:59 by sbednar          ###   ########.fr       */
+/*   Created: 2018/12/14 19:09:17 by jziemann          #+#    #+#             */
+/*   Updated: 2019/01/20 19:29:45 by jziemann         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static t_list	*newlst(size_t fd)
-{
-	t_list	*new;
-
-	if (!(new = (t_list *)malloc(sizeof(t_list))))
-		return (NULL);
-	new->next = NULL;
-	new->content = (void *)ft_strdup("");
-	new->content_size = fd;
-	if (!(new->content))
-		return (NULL);
-	return (new);
-}
-
-static t_list	*getcurlst(int fd, t_list **l)
+t_list		*ft_list(int fd, t_list **file)
 {
 	t_list	*temp;
+	char	a[1];
 
-	temp = *l;
+	a[0] = '\0';
+	temp = *file;
 	while (temp)
 	{
-		if (temp->content_size == (unsigned int)fd)
+		if ((int)temp->content_size == fd)
 			return (temp);
 		temp = temp->next;
 	}
-	if (!(temp = newlst((size_t)fd)))
-		return (NULL);
-	ft_lstadd(l, temp);
-	temp = *l;
-	return (temp);
+	if (!(temp = ft_lstnew(a, fd ? fd : 1)))
+		return ((void *)0);
+	ft_lstadd(file, temp);
+	return (*file);
 }
 
-static int		node_solver(t_list *src, char **line)
+char		*ft_correctline(char **line, char **src)
 {
-	char	*temp;
+	int i;
 
-	if (src->content && (temp = ft_strchr((char *)src->content, '\n')))
+	i = ft_strchr((*src), '\n') - (*src);
+	if (ft_strchr(*src, '\n'))
 	{
-		if (!(*line = ft_strsub(src->content, 0, temp - (char *)src->content)))
-			return (-1);
-		temp++;
-		temp = ft_strdup(temp);
-		free(src->content);
-		src->content = temp;
-		return (1);
-	}
-	return (0);
-}
-
-static int		end_it(char **line, t_list *src)
-{
-	if (src->content)
-		if (ft_strlen((char *)src->content))
+		(*src)[i] = '\0';
+		if ((*src)[i + 1])
 		{
-			if (!(*line = ft_strdup((char *)src->content)))
-				return (-1);
-			else
-			{
-				if (line[0][ft_strlen(*line) - 1] == '\n')
-					line[0][ft_strlen(*line) - 1] = '\0';
-				free(src->content);
-				src->content = NULL;
-				return (1);
-			}
+			if ((*line = ft_strdup(*src)) && (ft_strclr(*src)))
+				ft_memmove(*src, *(src) + i + 1, ft_strlen(*(src) + i + 1) + 1);
+			return (*line);
 		}
-	return (0);
+		else
+			*line = ft_strdup(*src);
+	}
+	else
+	{
+		if (ft_strlen(*src) > 0)
+			*line = ft_strdup(*src);
+		else
+			return (NULL);
+	}
+	ft_strclr(*src);
+	return (*line);
 }
 
-int				get_next_line(const int fd, char **line)
+int			read_buffer(char **list, int fd, t_list **file)
 {
-	static t_list	*l;
-	t_list			*src;
-	char			buff[BUFF_SIZE + 1];
-	int				place;
-	char			*temp;
+	char	buff[BUFF_SIZE + 1];
+	char	*temp;
+	int		rd;
 
-	temp = NULL;
-	if (fd < 0 || !line || (read(fd, buff, 0) < 0)
-			|| !(src = getcurlst(fd, &l)))
+	if (read(fd, buff, 0) < 0)
 		return (-1);
-	if ((place = node_solver(src, line)))
-		return (place);
-	while ((place = read(fd, buff, BUFF_SIZE)))
+	while ((rd = read(fd, buff, BUFF_SIZE)) > 0)
 	{
-		buff[place] = '\0';
-		if (!(temp = ft_strjoin((char *)src->content, buff)))
+		buff[rd] = '\0';
+		temp = *list;
+		if (!(*list = ft_strjoin(temp, buff)))
+		{
+			*file = (*file)->next;
 			return (-1);
-		ft_memdel(&(src->content));
-		src->content = (void *)temp;
-		if ((place = node_solver(src, line)))
-			return (place);
+		}
+		ft_strdel(&temp);
+		if (ft_strchr(buff, '\n'))
+			return (0);
 	}
-	return (end_it(line, src));
+	return (rd);
+}
+
+t_list		*list_rm(t_list *begin, t_list *temp, t_list **file_temp)
+{
+	if (begin == temp)
+		(*file_temp) = begin->next;
+	else
+	{
+		while (begin && begin != temp)
+		{
+			*file_temp = begin;
+			begin = begin->next;
+		}
+		(*file_temp)->next = (*file_temp)->next->next;
+	}
+	return (begin);
+}
+
+int			get_next_line(const int fd, char **line)
+{
+	static t_list	*file = NULL;
+	t_list			*list;
+	int				rd;
+	t_list			*file_temp;
+	t_list			*file_del;
+
+	if (fd < 0 || !line || FD || !(list = ft_list(fd, &file)))
+		return (-1);
+	if (!(ft_strchr(list->content, '\n')))
+	{
+		rd = read_buffer(((char **)(&(list->content))), fd, &file);
+		if (rd == -1)
+			return (-1);
+	}
+	if (!(ft_correctline(line, (char**)(&(list->content)))))
+	{
+		file_temp = NULL;
+		file_del = list_rm(file, list, &file_temp);
+		free(file_del->content);
+		free(file_del);
+		if (file == list)
+			file = file_temp;
+		return (0);
+	}
+	return (1);
 }

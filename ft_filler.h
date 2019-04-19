@@ -25,7 +25,6 @@ struct		s_filler
 	int				map_y;
 	int 			**int_map;
 	int 			**int_enemy_map;
-	int				fd;///todo del
 
 }typedef	t_filler;
 
@@ -33,6 +32,8 @@ struct		s_vec
 {
 	int		*x;
 	int		*y;
+	int 	*start_x;
+	int		*start_y;
 	size_t	cap;
 	size_t	len;
 } typedef	t_vec;
@@ -42,6 +43,7 @@ struct		s_piece
 	int		piece_x;
 	int		piece_y;
 	t_vec	*token;
+	char 	**piece;
 }typedef	t_piece;
 
 struct		s_best_place

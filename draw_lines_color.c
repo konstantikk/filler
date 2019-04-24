@@ -16,10 +16,10 @@ void	draw_line(void *param, int x1, int y1, int x2, int y2)
 {
 	if (x1 == x2)
 		while (y1 <= y2)
-			_DATA[x1 * (SCREEN_WID) + y1++] = 0x555555;
+			_DATA[x1 * (SCREEN_WID) + y1++] = COLOR_LINE;
 	else
 		while (x1 <= x2)
-			_DATA[x1++ * (SCREEN_WID) + y1] = 0x555555;
+			_DATA[x1++ * (SCREEN_WID) + y1] = COLOR_LINE;
 
 }
 
@@ -30,13 +30,14 @@ void	print_matrix(t_game *game, void	*param)
 
 	i = 0;
 	j = 0;
-	//int k = 0;
-	while (i <= SCREEN_HEI && j <= SCREEN_WID)
+	while (i < SCREEN_HEI )
 	{
-		//printf("%d\n", k++);
 		draw_line(param, i, 0, i , SCREEN_HEI);
-		draw_line(param, 0, j, SCREEN_HEI - 1, j);
 		i += game->scale_x;
+	}
+	while (j < SCREEN_WID - 500)
+	{
+		draw_line(param, 0, j, SCREEN_HEI - 1, j);
 		j += game->scale_y;
 	}
 }
@@ -54,9 +55,9 @@ int 	ft_exp_background(void *p, t_game *game)
 		y = -1;
 		while (++y < SCREEN_WID)
 			if (y <  SCREEN_WID - 500)
-				param->data[x * SCREEN_WID + y] = 0x3b3b3b;
+				param->data[x * SCREEN_WID + y] = COLOR_BACKGROUND;
 			else
-				param->data[x * SCREEN_WID + y] = 0x1d1d1d;
+				param->data[x * SCREEN_WID + y] = COLOR_BACKGROUND;
 	}
 	ranking_players(param, game);
 	print_matrix(game, param);

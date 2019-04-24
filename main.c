@@ -68,11 +68,6 @@ void	read_gamers(t_game *game, void *param)
 	game->p2 = 'X';
 }
 
-void	filler_attack(void *param, t_game *game)
-{
-
-}
-
 void	ranking_players(void *param, t_game *game)
 {
 	int i;
@@ -84,9 +79,9 @@ void	ranking_players(void *param, t_game *game)
 		j = -1;
 		while (++j < game->map_y)
 			if (game->map[i][j] == game->p1)
-				color_cell(param, 0xfa0051, i, j, game);
+				color_cell(param, COLOR_P1, i, j, game);
 			else if (game->map[i][j] == game->p2)
-				color_cell(param, 0x00ccaa, i, j, game);
+				color_cell(param, COLOR_P2, i, j, game);
 	}
 }
 
@@ -124,9 +119,9 @@ void	read_token(t_game *token, void *param, int step)
 		while (++j < token->piece_y)
 		{
 			if (token->piece[i][j] == '*')
-				color_cell(param, 0xfa0051, i + token->scale_x / 10, j + SCREEN_WID - 500, token);
+				color_cell(param, 0x8EB7D1, i + token->scale_x / 10, j + SCREEN_WID - 500, token);
 			else
-				color_cell(param, 0x444444, i + token->scale_x / 10, j + SCREEN_WID - 500, token);
+				color_cell(param, COLOR_MAP, i + token->scale_x / 10, j + SCREEN_WID - 500, token);
 		}
 	}
 	del_char_arr(&(token->piece), token->piece_x);
@@ -152,13 +147,15 @@ int		main()
 	read_token(game, param, step);
 	mlx_put_image_to_window(param->mlx_ptr, param->win_ptr, param->img_ptr, 0, 0);
 
-	mlx_string_put(MLX_PTR, WIN_PTR, game->player1_step, 80, 0xffffff, game->player1);
-	mlx_string_put(MLX_PTR, WIN_PTR, game->player2_step, 80, 0xffffff, game->player2);
+	mlx_string_put(MLX_PTR, WIN_PTR, game->player1_step, 80, 0xEDD32B, game->player1);
+	mlx_string_put(MLX_PTR, WIN_PTR, game->player2_step, 80, 0x90BBD4, game->player2);
 	mlx_string_put(MLX_PTR, WIN_PTR, SCREEN_WID - 500 + 5, 120, 0xffffff, "Score :");
-	for (int i = 0; i < 100; i++)
+	/*while (1)
 	{
 		get_next_line(0, &buff);
-		if (!(ft_strchr(buff, '<')))
+		ft_strdel(&buff);
+		get_next_line(0, &buff);
+		if (!(ft_strchr(buff, 'P')))
 		{
 			ft_hook_loop(param);
 			mlx_loop(MLX_PTR);
@@ -179,7 +176,7 @@ int		main()
 		mlx_string_put(MLX_PTR, WIN_PTR, SCREEN_WID - 500 + 5, 120, 0xffffff,
 				"Score :");
 
-	}
+	}*/
 	//mlx_expose_hook(WIN_PTR, ft_exp_background, param);
 	//filler_attack(param, game);
 

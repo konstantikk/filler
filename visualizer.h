@@ -30,14 +30,12 @@
 # define SCREEN_WID     ((t_vis*)param)->screen_width
 # define SCREEN_HEI     ((t_vis*)param)->screen_height
 
-typedef struct	s_image
-{
-	void	*img_ptr;
-	int		bits_per_pixel;
-	int		size_line;
-	int		endian;
-	int		*data;
-}				t_image;
+# define COLOR_P1 0xA18F1D
+# define COLOR_P2 0x35596E
+# define COLOR_BACKGROUND 0x4A4A4A //gray
+# define COLOR_MAP 0x33566B
+# define COLOR_LINE 0x5a5a5a //white
+
 
 typedef struct  s_visualize
 {   

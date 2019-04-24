@@ -65,7 +65,7 @@ char		**create_map(t_game *fill, char **map)
 			return (NULL);
 	}
 	else
-		while (++i < 2 && get_next_line(0, &line))
+		while (++i < 1 && get_next_line(0, &line))
 			ft_strdel(&line);
 	i = 0;
 	while (i < fill->map_x)

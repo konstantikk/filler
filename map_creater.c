@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "filler_func.h"
+#include "visualizer.h"
 
 void		del_char_arr(char ***arr, int len)
 {
@@ -50,17 +50,23 @@ char		**create_char_map(int matrix_x, int matrix_y)
 	return (matrix);
 }
 
-char		**create_map(t_filler *fill, char **map)
+char		**create_map(t_game *fill, char **map)
 {
 	char	*line;
 	char	*buff;
 	int		i;
 
+	i = -1;
 	if (!map)
-		if (!(map = create_char_map(fill->map_x, fill->map_y)) ||
-		!(fill->int_map = int_map(fill)) ||
-		!(fill->int_enemy_map = int_map(fill)))
+	{
+		get_next_line(0, &line);
+		ft_strdel(&line);
+		if (!(map = create_char_map(fill->map_x, fill->map_y)))
 			return (NULL);
+	}
+	else
+		while (++i < 2 && get_next_line(0, &line))
+			ft_strdel(&line);
 	i = 0;
 	while (i < fill->map_x)
 	{
@@ -73,7 +79,7 @@ char		**create_map(t_filler *fill, char **map)
 	return (map);
 }
 
-int			**int_map(t_filler *fill)
+int			**int_map(t_game *fill)
 {
 	int **arr;
 	int i;
